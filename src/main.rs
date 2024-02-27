@@ -12,6 +12,8 @@ struct Config {
     accounts: Option<bool>,
     login: Option<bool>,
     properties: Option<bool>,
+    contact: Option<bool>,
+    newsletter: Option<bool>,
 }
 
 impl Config {
@@ -55,6 +57,20 @@ impl KongJSBuilder {
             }
         }
 
+        if let Some(contact) = config.contact {
+            if contact {
+                let contactjs = KongJSBuilder::copy_contactjs(&config.src_dir);
+                output_src = format!("{output_src}{contactjs}");
+            }
+        }
+
+        if let Some(newsletter) = config.newsletter {
+            if newsletter {
+                let newsletterjs = KongJSBuilder::copy_newsletterjs(&config.src_dir);
+                output_src = format!("{output_src}{newsletterjs}");
+            }
+        }
+
         KongJSBuilder::save_src(&output_src, &config.out_js_file);
     }
 
@@ -75,6 +91,16 @@ impl KongJSBuilder {
 
     fn copy_propertiesjs(src_path: &str) -> String {
         let src_path = format!("{src_path}/properties.js");
+        fs::read_to_string(src_path).unwrap()
+    }
+
+    fn copy_contactjs(src_path: &str) -> String {
+        let src_path = format!("{src_path}/contact.js");
+        fs::read_to_string(src_path).unwrap()
+    }
+
+    fn copy_newsletterjs(src_path: &str) -> String {
+        let src_path = format!("{src_path}/newsletter.js");
         fs::read_to_string(src_path).unwrap()
     }
 
